@@ -12,12 +12,13 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::all();
+        $customers = Customer::latest()->paginate(10);
 
         return response()->json([
             'success' => true,
+            'message' => 'Customer list retrieved successfully',
             'data' => $customers
-     ]);
+        ]);
     }
 
     /**
@@ -34,9 +35,10 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:customers,email',
-            'phone_number' => 'required'
+            'phone_number' => 'required|string|max:20',
+            'address' => 'nullable|string'
         ]);
 
         $customer = Customer::create([
@@ -82,9 +84,10 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:customers,email,' . $id,
-            'phone_number' => 'required'
+            'phone_number' => 'required|string|max:20',
+            'address' => 'nullable|string'
         ]);
 
         $customer->update([
