@@ -12,7 +12,12 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        //
+        $customers = Customer::all();
+
+        return response()->json([
+            'success' => true,
+            'data' => $customers
+     ]);
     }
 
     /**
@@ -28,15 +33,37 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:customers,email',
+            'phone_number' => 'required'
+        ]);
+
+        $customer = Customer::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'address' => $request->address
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer created successfully',
+            'data' => $customer
+        ], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Customer $customer)
+    public function show(string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data' => $customer
+        ]);
     }
 
     /**
@@ -50,16 +77,42 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Customer $customer)
+    public function update(Request $request, string $id)
     {
-        //
+        $customer = Customer::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:customers,email,' . $id,
+            'phone_number' => 'required'
+        ]);
+
+        $customer->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'address' => $request->address
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer updated successfully',
+            'data' => $customer
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Customer $customer)
+    public function destroy(string $id)
     {
-        //
+         $customer = Customer::findOrFail($id);
+
+        $customer->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer deleted successfully'
+        ]);
     }
 }
