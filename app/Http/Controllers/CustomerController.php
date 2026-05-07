@@ -15,7 +15,7 @@ class CustomerController extends Controller
         $customers = Customer::latest()->paginate(10);
 
         return response()->json([
-            'success' => true,
+            'status' => true,
             'message' => 'Customer list retrieved successfully',
             'data' => $customers
         ]);
@@ -41,15 +41,10 @@ class CustomerController extends Controller
             'address' => 'nullable|string'
         ]);
 
-        $customer = Customer::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'address' => $request->address
-        ]);
+        $customer = Customer::create($validated);
 
         return response()->json([
-            'success' => true,
+            'status' => true,
             'message' => 'Customer created successfully',
             'data' => $customer
         ], 201);
@@ -58,12 +53,13 @@ class CustomerController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
         $customer = Customer::findOrFail($id);
 
         return response()->json([
-            'success' => true,
+            'status' => true,
+            'message' => 'Customer detail retrieved',
             'data' => $customer
         ]);
     }
@@ -79,7 +75,7 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $customer = Customer::findOrFail($id);
 
@@ -90,15 +86,10 @@ class CustomerController extends Controller
             'address' => 'nullable|string'
         ]);
 
-        $customer->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'address' => $request->address
-        ]);
+        $customer->update($validated);
 
         return response()->json([
-            'success' => true,
+            'status' => true,
             'message' => 'Customer updated successfully',
             'data' => $customer
         ]);
@@ -107,15 +98,15 @@ class CustomerController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-         $customer = Customer::findOrFail($id);
-
+        $customer = Customer::findOrFail($id);
         $customer->delete();
 
         return response()->json([
-            'success' => true,
-            'message' => 'Customer deleted successfully'
+            'status' => true,
+            'message' => 'Customer deleted successfully',
+            'data' => null
         ]);
     }
 }
